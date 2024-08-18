@@ -1,0 +1,43 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username String    @id @db.VarChar(100)
+  password String    @db.VarChar(100)
+  tasks    Task[] 
+  @@map("users")
+}
+
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  nama        String    @db.VarChar(20)
+  description String?   @db.VarChar(100)
+  date        DateTime
+  status      Status   @default(DOING)
+  kelompok    Kelompok
+  user        User     @relation(fields: [username], references: [username])
+  username    String 
+  @@map("tasks")
+}
+
+enum Status {
+  PENDING
+  DOING
+  DONE
+}
+
+enum Kelompok {
+  WORK
+  PERSONAL
+  SHOPPING
+  OTHERS
+}

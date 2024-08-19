@@ -12,6 +12,27 @@ datasource db {
 model User {
   username String    @id @db.VarChar(100)
   password String    @db.VarChar(100)
+  urls Url[]
   @@map("users")
 }
 
+model Url {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(30)
+  shortURL     String   @db.VarChar(10) @unique
+  redirectURL String   @db.VarChar(300)
+  visitCount  Int      @default(0) @db.Int
+  status      Status   @default(ACTIVE)
+  lastVisit   DateTime? 
+  createdAt   DateTime @default(now())
+  username    String  
+  user        User     @relation(fields: [username], references: [username], onDelete: Cascade)
+
+  @@map("urls")
+}
+
+
+enum Status {
+  ACTIVE
+  DISABLED
+}

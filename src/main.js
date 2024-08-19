@@ -17,5 +17,5 @@ app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`url-shortener app listening on port ${port}`);
 });

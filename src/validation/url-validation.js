@@ -22,10 +22,4 @@ const updateUrlValidation = Joi.object({
   }),
 });
 
-const updateStatusUrlValidation = Joi.object({
-  status: Joi.string().valid("ACTIVE", "DISABLED").required().messages({
-    "any.only": "Status harus salah satu dari {#valids}.",
-  }),
-});
-
-export { createUrlValidation, updateUrlValidation, updateStatusUrlValidation };
+export { createUrlValidation, updateUrlValidation };

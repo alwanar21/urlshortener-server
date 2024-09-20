@@ -1,8 +1,4 @@
-import {
-  createUrlValidation,
-  updateStatusUrlValidation,
-  updateUrlValidation,
-} from "../validation/url-validation.js";
+import { createUrlValidation, updateUrlValidation } from "../validation/url-validation.js";
 import { nanoid } from "nanoid";
 import { validate } from "../validation/validation.js";
 import { prismaClient } from "../app/database.js";
@@ -14,7 +10,7 @@ const getAll = async (request) => {
   const pageCurrent = request.query.page;
   let page = parseInt(request.query.page, 10);
 
-  const pageSize = 3;
+  const pageSize = 5;
   if (!pageCurrent) {
     page = 1;
   } else if (isNaN(page) || page < 1) {
@@ -31,7 +27,7 @@ const getAll = async (request) => {
   });
 
   const totalPages = Math.ceil(totalCount / pageSize);
-  if (page > totalPages) {
+  if (page > totalPages && page > 1) {
     return {
       message: "Page not found.",
       data: [],
@@ -49,7 +45,7 @@ const getAll = async (request) => {
   if (urls.length < 1) {
     return {
       message: "URLs not found",
-      data: tasks,
+      data: [],
     };
   }
 

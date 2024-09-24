@@ -30,7 +30,7 @@ const create = async (req, res, next) => {
   try {
     const newURL = await urlService.create(req);
     res.status(201).json({
-      message: "URL created successfully",
+      message: "Url created successfully",
       data: newURL,
     });
   } catch (e) {

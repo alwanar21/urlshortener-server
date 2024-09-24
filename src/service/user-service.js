@@ -3,11 +3,7 @@ import { ResponseError } from "../error/response-error.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import {
-  getUserValidation,
-  loginUserValidation,
-  registerUserValidation,
-} from "../validation/user-validation.js";
+import { getUserValidation, loginUserValidation, registerUserValidation } from "../validation/user-validation.js";
 import { validate } from "../validation/validation.js";
 dotenv.config();
 
@@ -51,10 +47,12 @@ const login = async (request) => {
 
   const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
   if (!isPasswordValid) {
-    throw new ResponseError(401, "Username or password wrong!!");
+    throw new ResponseError(401, "Username or password wrong");
   }
 
-  let token = jwt.sign({ username: user.username }, process.env.PRIVATE_TOKEN_KEY);
+  let token = jwt.sign({ username: user.username }, process.env.PRIVATE_TOKEN_KEY, {
+    expiresIn: "1h",
+  });
 
   return {
     token,

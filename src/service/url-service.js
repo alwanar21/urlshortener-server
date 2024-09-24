@@ -15,7 +15,7 @@ const getAll = async (request) => {
     page = 1;
   } else if (isNaN(page) || page < 1) {
     return {
-      message: "URLs not found",
+      message: "Urls not found",
       data: [],
     };
   }
@@ -29,7 +29,7 @@ const getAll = async (request) => {
   const totalPages = Math.ceil(totalCount / pageSize);
   if (page > totalPages && page > 1) {
     return {
-      message: "Page not found.",
+      message: "Urls not foud",
       data: [],
     };
   }
@@ -38,13 +38,16 @@ const getAll = async (request) => {
     where: {
       username,
     },
+    include: {
+      username: false,
+    },
     skip: (page - 1) * pageSize,
     take: pageSize,
   });
 
   if (urls.length < 1) {
     return {
-      message: "URLs not found",
+      message: "Urls not found",
       data: [],
     };
   }
@@ -52,9 +55,7 @@ const getAll = async (request) => {
   const transformedUrls = urls.map((url) => {
     return {
       ...url,
-      lastVisit: url.lastVisit
-        ? moment(url.lastVisit).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
-        : null,
+      lastVisit: url.lastVisit ? moment(url.lastVisit).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss") : null,
       shortURL: `localhost:3000/url/${url.shortURL}`,
     };
   });
@@ -75,7 +76,7 @@ const get = async (request) => {
   const id = parseInt(request.params.id, 10);
 
   if (Number.isNaN(id)) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   const url = await prismaClient.url.findUnique({
@@ -85,20 +86,20 @@ const get = async (request) => {
   });
 
   if (!url) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   if (url.username !== username) {
-    throw new ResponseError(403, "You do not have permission to access this URL.");
+    throw new ResponseError(403, "You do not have permission to access this Url");
   }
 
   const transformedUrl = {
     ...url,
-    lastVisit: url.lastVisit
-      ? moment(url.lastVisit).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
-      : null,
+    lastVisit: url.lastVisit ? moment(url.lastVisit).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss") : null,
     shortURL: `localhost:3000/url/${url.shortURL}`,
   };
+
+  delete transformedUrl.username;
 
   return {
     data: transformedUrl,
@@ -115,11 +116,11 @@ const getUrl = async (request, response) => {
   });
 
   if (!url) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   if (url.status !== "ACTIVE") {
-    throw new ResponseError(403, "URL is disabled.");
+    throw new ResponseError(403, "Url is disabled");
   }
 
   await prismaClient.url.update({
@@ -152,7 +153,7 @@ const remove = async (request) => {
   const id = parseInt(request.params.id, 10);
 
   if (Number.isNaN(id)) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   const url = await prismaClient.url.findUnique({
@@ -162,11 +163,11 @@ const remove = async (request) => {
   });
 
   if (!url) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   if (url.username !== username) {
-    throw new ResponseError(403, "You do not have permission to delete this url.");
+    throw new ResponseError(403, "You do not have permission to delete this url");
   }
 
   await prismaClient.url.delete({
@@ -176,7 +177,7 @@ const remove = async (request) => {
   });
 
   return {
-    message: `Task ${id} removed successfully`,
+    message: `Url removed successfully`,
   };
 };
 
@@ -185,7 +186,7 @@ const update = async (request) => {
   const id = parseInt(request.params.id, 10);
 
   if (Number.isNaN(id)) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found.");
   }
 
   const url = await prismaClient.url.findUnique({
@@ -195,17 +196,17 @@ const update = async (request) => {
   });
 
   if (!url) {
-    throw new ResponseError(404, "URL not found.");
+    throw new ResponseError(404, "Url not found");
   }
 
   if (url.username !== username) {
-    throw new ResponseError(403, "You do not have permission to update this URL.");
+    throw new ResponseError(403, "You do not have permission to update this url");
   }
 
   const updateUrl = validate(updateUrlValidation, request.body);
 
   if (!updateUrl || Object.keys(updateUrl).length === 0) {
-    throw new ResponseError(400, "No data provided for update.");
+    throw new ResponseError(400, "No data provided for update");
   }
 
   const updatedUrl = await prismaClient.url.update({
@@ -216,8 +217,7 @@ const update = async (request) => {
   });
 
   return {
-    message: `URL ${id} updated successfully`,
-    data: updatedUrl,
+    message: `Url updated successfully`,
   };
 };
 
@@ -251,7 +251,7 @@ const updateStatus = async (request) => {
     newStatus = "ACTIVE";
   }
 
-  const newUrl = await prismaClient.url.update({
+  await prismaClient.url.update({
     where: {
       id: id,
     },
@@ -261,8 +261,7 @@ const updateStatus = async (request) => {
   });
 
   return {
-    message: `Status URL ${id} updated successfully`,
-    data: newUrl,
+    message: `Url status updated successfully`,
   };
 };
 
